@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/aviaryan/BigEval.js.git"
+    "url": "git+https://github.com/thechosenreader/BigEval.js.git"
   },
   "keywords": [
     "arithmetic",
@@ -25,9 +25,9 @@
   "author": "Avi Aryan",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/aviaryan/BigEval.js/issues"
+    "url": "https://github.com/thechosenreader/BigEval.js/issues"
   },
-  "homepage": "https://github.com/aviaryan/BigEval.js",
+  "homepage": "https://github.com/thechosenreader/BigEval.js",
   "devDependencies": {
     "eclint": "^2.8.1",
     "nodeunit": "^0.11.3",
