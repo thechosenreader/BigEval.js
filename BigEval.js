@@ -22,6 +22,19 @@ var TokenType = {
 	COMMA: ','
 };
 
+const OPS = Object.freeze({
+	FAC_NOT: '!',
+	POW: '^',
+	MUL: '*', DIV: '/', DIV_BS: '\\',
+	ADD: '+', SUB: '-' ,
+	MOD: '%',
+	AND: '&&', OR: '||',
+	BW_AND: '&', BW_OR: '|', BW_XOR: '**',
+	LSHIFT: '<<', RSHIFT: '>>',
+	LT: '<', GT: '>', LTE: '<=', GTE: '>=',
+	EQ: '=', EQEQ: '==', NEQ: '!=', NEQ_LTGT: '<>'
+})
+
 var hasOwnProperty = Object.hasOwnProperty;
 
 var DEFAULT_VAR_NAME_CHARS = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_$';
@@ -77,15 +90,15 @@ var BigEval = function() {
 	// https://en.wikipedia.org/wiki/Order_of_operations#Programming_languages
 
 	this.order = [
-				['!'],
-				['**'],
-				['\\', '/', '*', '%'],
-				['+', '-'],
-				['<<', '>>'],
-				['<', '<=', '>', '>='],
-				['==', '=', '!=', '<>'],
-				['&'], ['^'], ['|'],
-				['&&'], ['||']
+				[OPS.FAC_NOT],
+				[OPS.POW],
+				[OPS.DIV_BS, OPS.DIV, OPS.MUL, OPS.MOD],
+				[OPS.ADD, OPS.SUB],
+				[OPS.LSHIFT, OPS.RSHIFT],
+				[OPS.LT, OPS.LTE, OPS.GT, OPS.GTE],
+				[OPS.EQEQ, OPS.EQ, OPS.NEQ, OPS.NEQ_LTGT],
+				[OPS.BW_AND], [OPS.BW_XOR], [OPS.BW_OR],
+				[OPS.AND], [OPS.OR]
 				];
 
 	this.prefixOps = ['!'];
@@ -703,74 +716,74 @@ BigEval.prototype._evaluateToken = function (token) {
 			var res;
 			switch (token.value) {
 
-				case '!': // Factorial or Not
+				case OPS.FAC_NOT: // Factorial or Not
 					if (token.left) { // Factorial (i.e. 5!)
 						return this.fac(this._evaluateToken(token.left));
 					} else { // Not (i.e. !5)
 						return this.logicalNot(this._evaluateToken(token.right));
 					}
 
-				case '/': // Divide
-				case '\\':
+				case OPS.DIV: // Divide
+				case OPS.DIV:
 					return this.div(this._evaluateToken(token.left), this._evaluateToken(token.right));
 
-				case '*': // Multiply
+				case OPS.MUL: // Multiply
 					return this.mul(this._evaluateToken(token.left), this._evaluateToken(token.right));
 
-				case '+': // Add
+				case OPS.ADD: // Add
 					return this.add(this._evaluateToken(token.left), this._evaluateToken(token.right));
 
-				case '-': // Subtract
+				case OPS.SUB: // Subtract
 					return this.sub(this._evaluateToken(token.left), this._evaluateToken(token.right));
 
-				case '<<': // Shift left
+				case OPS.LSHIFT: // Shift left
 					return this.shiftLeft(this._evaluateToken(token.left), this._evaluateToken(token.right));
 
-				case '>>': // Shift right
+				case OPS.RSHIFT: // Shift right
 					return this.shiftRight(this._evaluateToken(token.left), this._evaluateToken(token.right));
 
-				case '<': // Less than
+				case OPS.LT: // Less than
 					return this.lessThan(this._evaluateToken(token.left), this._evaluateToken(token.right));
 
-				case '<=': // Less than or equals to
+				case OPS.LTE: // Less than or equals to
 					return this.lessThanOrEqualsTo(this._evaluateToken(token.left), this._evaluateToken(token.right));
 
-				case '>': // Greater than
+				case OPS.GT: // Greater than
 					return this.greaterThan(this._evaluateToken(token.left), this._evaluateToken(token.right));
 
-				case '>=': // Greater than or equals to
+				case OPS.GTE: // Greater than or equals to
 					return this.greaterThanOrEqualsTo(this._evaluateToken(token.left), this._evaluateToken(token.right));
 
-				case '==': // Equals to
-				case '=':
+				case OPS.EQEQ: // Equals to
+				case OPS.EQ:
 					return this.equalsTo(this._evaluateToken(token.left), this._evaluateToken(token.right));
 
-				case '!=': // Not equals to
-				case '<>':
+				case OPS.NEQ: // Not equals to
+				case OPS.NEQ_LTGT:
 					return this.notEqualsTo(this._evaluateToken(token.left), this._evaluateToken(token.right));
 
-				case '**': // Power
+				case OPS.POW: // Power
 					return this.pow(this._evaluateToken(token.left), this._evaluateToken(token.right));
 
-				case '%': // Mod
+				case OPS.MOD: // Mod
 					return this.mod(this._evaluateToken(token.left), this._evaluateToken(token.right));
 
-				case '&': // Bitwise AND
+				case OPS.BW_AND: // Bitwise AND
 					return this.and(this._evaluateToken(token.left), this._evaluateToken(token.right));
 
-				case '^': // Bitwise XOR
+				case OPS.BW_XOR: // Bitwise XOR
 					return this.xor(this._evaluateToken(token.left), this._evaluateToken(token.right));
 
-				case '|': // Bitwise OR
+				case OPS.BW_OR: // Bitwise OR
 					return this.or(this._evaluateToken(token.left), this._evaluateToken(token.right));
 
-				case '&&': // Logical AND
+				case OPS.AND: // Logical AND
 					res = this._evaluateToken(token.left);
 					if (this.isTruthy(res))
 						return this._evaluateToken(token.right);
 					return res;
 
-				case '||': // Logical OR
+				case OPS.OR: // Logical OR
 					res = this._evaluateToken(token.left);
 					if (!this.isTruthy(res))
 						return this._evaluateToken(token.right);
